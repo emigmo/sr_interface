@@ -19,7 +19,7 @@
   <arg name="hand_serial" default="1322"/>
   <!-- Loads the robot description -->
   <arg name="robot_description"
-       default="$(find sr_description)/robots/shadowhand_motor.urdf.xacro"/>
+       default="$(find sr_description)/robots/shadowhand_extra_lite.urdf.xacro"/>
   <!-- Allows to specify the ethernet interface/s to be used for ethercat devices. It defaults to the value of the env var ETHERCAT_PORT
        More than one interface can be specified by concatenating them using underscore as a separator (e.g eth1_eth2_eth3) -->
   <arg name="eth_port" default="$(optenv ETHERCAT_PORT eth0)"/>
