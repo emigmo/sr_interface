@@ -18,7 +18,8 @@ hand_parameters = hand_finder.get_hand_parameters()
 prefix = hand_parameters.mapping.values()[0]
 hand_serial = hand_parameters.mapping.keys()[0]
 
-hand_commander = SrHandCommander(hand_parameters=hand_parameters, hand_serial=hand_serial)
+group_id = "rh_shadow_hand"
+hand_commander = SrHandCommander(name=group_id,hand_parameters=hand_parameters, hand_serial=hand_serial)
 
 print("Joints positions")
 
