@@ -43,7 +43,7 @@ trajectory = [
 
 
 # Run trajectory via moveit
-hand_commander.run_named_trajectory(trajectory)
+hand_commander.run_mixed_trajectory(trajectory)
 
 # Run trajectory by sending directly to controllers - faster but no collision checking.
-hand_commander.run_named_trajectory_unsafe(trajectory, True)
+hand_commander.run_mixed_trajectory_unsafe(trajectory, True)

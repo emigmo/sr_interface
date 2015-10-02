@@ -274,7 +274,7 @@ class SrRobotCommander(object):
         plan.joint_trajectory = joint_trajectory
         self._move_group_commander.execute(plan)
 
-    def make_named_trajectory(self, trajectory):
+    def make_mixed_trajectory(self, trajectory):
         """
         Makes joint value trajectory from specified by named poses (either from
         SRDF or from warehouse), or from dicts of named angles.
@@ -343,7 +343,7 @@ class SrRobotCommander(object):
 
         self.run_joint_trajectory_unsafe(trajectory)
 
-    def run_named_trajectory_unsafe(self, trajectory, wait=False):
+    def run_mixed_trajectory_unsafe(self, trajectory, wait=False):
         """
         Makes joint value trajectory from specified by named poses (either from
         SRDF or from warehouse), or from dicts of named angles.
@@ -355,11 +355,11 @@ class SrRobotCommander(object):
                             - pause_time -> time to wait at this wp
         Either name OR angles should be specified for each wp.
         """
-        joint_trajectory = self.make_named_trajectory(trajectory)
+        joint_trajectory = self.make_mixed_trajectory(trajectory)
         if joint_trajectory is not None:
             self.run_joint_trajectory_unsafe(joint_trajectory, wait)
 
-    def run_named_trajectory(self, trajectory):
+    def run_mixed_trajectory(self, trajectory):
         """
         Makes joint value trajectory from specified by named poses (either from
         SRDF or from warehouse), or from dicts of named angles.
@@ -371,7 +371,7 @@ class SrRobotCommander(object):
                             - pause_time -> time to wait at this wp
         Either name OR angles should be specified for each wp.
         """
-        joint_trajectory = self.make_named_trajectory(trajectory)
+        joint_trajectory = self.make_mixed_trajectory(trajectory)
         if joint_trajectory is not None:
             self.run_joint_trajectory(joint_trajectory)
 
