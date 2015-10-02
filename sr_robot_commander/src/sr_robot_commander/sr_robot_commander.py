@@ -302,7 +302,7 @@ class SrRobotCommander(object):
 
             if joint_positions is None:
                 rospy.logerr("Invalid point - can't finish trajectory. Either "+
-                             "valid named pose or dict of angles must be specivied")
+                             "valid named pose or dict of angles must be specified")
                 return None
 
             trajectory_point = JointTrajectoryPoint()
