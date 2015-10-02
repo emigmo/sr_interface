@@ -36,6 +36,7 @@ from math import radians
 
 from sr_utilities.hand_finder import HandFinder
 
+from math import pi
 
 class SrRobotCommander(object):
     """
@@ -103,6 +104,19 @@ class SrRobotCommander(object):
             self.__plan = None
         else:
             rospy.logwarn("No plans where made, not executing anything.")
+
+    def convert_to_radians(self, angles_in_degrees):
+        """
+        Convert joint positions from degrees to radians
+        @param angles_in_degrees - either list or dictionary of joint positions
+        """
+        if type(angles_in_degrees) is list:
+            return [angle*pi/180 for angle in angles_in_degrees]
+        elif type(angles_in_degrees) is dict:
+            return {joint: angles_in_degrees[n]*pi/180 for joint in angles_in_degrees.keys()}
+        else:
+            rospy.logerr("Wrong type of argument - must be either list or dict.")
+            return None
 
     def move_to_joint_value_target(self, joint_states, wait=True,
                                    angle_degrees=False):
@@ -263,12 +277,14 @@ class SrRobotCommander(object):
     def make_named_trajectory(self, trajectory):
         """
         Makes joint value trajectory from specified by named poses (either from
-        SRDF or from warehouse)
+        SRDF or from warehouse), or from dicts of named angles.
         @param trajectory - list of waypoints, each waypoint is a dict with
                             the following elements:
                             - name -> the name of the way point
+                            - angles -> a dict of joint angles
                             - interpolate_time -> time to move from last wp
                             - pause_time -> time to wait at this wp
+        Either name OR angles should be specified for each wp.
         """
         current = self.get_current_pose_bounded()
         joint_trajectory = JointTrajectory()
@@ -278,9 +294,15 @@ class SrRobotCommander(object):
         time_from_start = 0.0
 
         for wp in trajectory:
-            joint_positions = self.get_named_target_joint_values(wp['name'])
+            joint_positions = None
+            if 'name' in wp:
+                joint_positions = self.get_named_target_joint_values(wp['name'])
+            elif 'angles' in wp:
+                joint_positions = wp['angles']
+
             if joint_positions is None:
-                rospy.logerr("Invalid point name - can't finish trajectory")
+                rospy.logerr("Invalid point - can't finish trajectory. Either "+
+                             "valid named pose or dict of angles must be specivied")
                 return None
 
             trajectory_point = JointTrajectoryPoint()
@@ -323,13 +345,15 @@ class SrRobotCommander(object):
 
     def run_named_trajectory_unsafe(self, trajectory, wait=False):
         """
-        Moves robot through trajectory specified by named poses, either from
-        SRDF or from warehouse. Runs trajectory directly via contoller.
+        Makes joint value trajectory from specified by named poses (either from
+        SRDF or from warehouse), or from dicts of named angles.
         @param trajectory - list of waypoints, each waypoint is a dict with
                             the following elements:
                             - name -> the name of the way point
+                            - angles -> a dict of joint angles
                             - interpolate_time -> time to move from last wp
                             - pause_time -> time to wait at this wp
+        Either name OR angles should be specified for each wp.
         """
         joint_trajectory = self.make_named_trajectory(trajectory)
         if joint_trajectory is not None:
@@ -337,13 +361,15 @@ class SrRobotCommander(object):
 
     def run_named_trajectory(self, trajectory):
         """
-        Moves robot through trajectory specified by named poses, either from
-        SRDF or from warehouse. Runs trajectory via moveit.
+        Makes joint value trajectory from specified by named poses (either from
+        SRDF or from warehouse), or from dicts of named angles.
         @param trajectory - list of waypoints, each waypoint is a dict with
                             the following elements:
                             - name -> the name of the way point
+                            - angles -> a dict of joint angles
                             - interpolate_time -> time to move from last wp
                             - pause_time -> time to wait at this wp
+        Either name OR angles should be specified for each wp.
         """
         joint_trajectory = self.make_named_trajectory(trajectory)
         if joint_trajectory is not None:
