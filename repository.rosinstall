@@ -40,7 +40,7 @@
 - git:
     local-name: warehouse_ros
     uri: https://github.com/shadow-robot/warehouse_ros.git
-    version: F#4_add_remote_mongo
+    version: F_fix_compile
 
 - git:
     local-name: ros_controllers
