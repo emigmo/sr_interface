@@ -156,9 +156,16 @@ class SrRobotCommander(object):
             self._move_group_commander.set_named_target(name)
         elif (name in self._warehouse_names):
             response = self._warehouse_name_get_srv(name, self._robot_name)
-            js = response.state.joint_state
-            self._move_group_commander.set_joint_value_target(js)
 
+            active_names = self._move_group_commander._g.get_active_joints()
+            joints = response.state.joint_state.name
+            positions = response.state.joint_state.position
+            js = {}
+
+            for n, this_name in enumerate(joints):
+                if this_name in active_names:
+                    js[this_name] = positions[n]
+            self._move_group_commander.set_joint_value_target(js)
         else:
             rospy.logerr("Unknown named state '%s'..." % name)
             return False
