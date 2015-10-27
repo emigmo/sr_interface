@@ -21,8 +21,7 @@ arm_commander = SrArmCommander()
 
 shake_time = 0.3
 
-one_shake =
-[{
+one_shake = [{
     'name': 'up_shake',
     'interpolate_time': shake_time
 },{
@@ -33,18 +32,29 @@ one_shake =
 shake_trajectory = one_shake*5
 
 def wait_for_topic():
-    pass
+    try:
+        input("Press enter to continue")
+    except:
+        pass
 
-
-
-hand_commander.move_to_named_target("hand_ready_to_shake", False)
-arm_commander.move_to_named_target("arm_ready_to_shake", False)
 
 wait_for_topic()
 
-hand_commander.move_to_named_target("close_hand_for_shake", True)
+arm_commander.move_to_named_target("prepare_to_shake", False)
+hand_commander.move_to_named_target("hand_ready_to_shake", False)
+
+wait_for_topic()
+
+arm_commander.move_to_named_target("ready_to_shake", False)
+
+wait_for_topic()
+
+hand_commander.move_to_named_target("close_for_shake", True)
+
+wait_for_topic()
+
 arm_commander.run_named_trajectory_unsafe(shake_trajectory, True)
 
-wait_for_topic()
-
 hand_commander.move_to_named_target("hand_ready_to_shake", False)
+wait_for_topic()
+arm_commander.move_to_named_target("prepare_to_shake", False)
