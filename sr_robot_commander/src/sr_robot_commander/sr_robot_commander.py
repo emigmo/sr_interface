@@ -188,9 +188,21 @@ class SrRobotCommander(object):
 
         else:
             rospy.logerr("No target named %s" % name)
+
             return None
 
         return output
+
+    # def enforce_bounds_on_joint_state(self, state):
+    #     if type(state) is JointState:
+    #         names = joint_state.name
+    #         positions = state.joint_state.position
+    #         state = dict (zip (names, positions))
+
+    #     bounded = self._move_group_commander._g.enforce_bounds_on_state(state)
+
+    #     new_state = deepcopy(state)
+    #     new_copy.positions = [bounded[name] for name in names]
 
     def get_current_pose(self):
         joint_names = self._move_group_commander._g.get_active_joints()
@@ -204,6 +216,9 @@ class SrRobotCommander(object):
         output = {n: current[n] for n in names if n in current}
 
         return output
+
+    def get_robot_state_bounded(self):
+        return self._move_group_commander._g.get_current_state_bounded()
 
     def move_to_named_target(self, name, wait=True):
         """
