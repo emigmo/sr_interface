@@ -550,4 +550,9 @@
     <disable_collisions link1="rh_rfdistal" link2="rh_rftip" reason="Adjacent" />
     <disable_collisions link1="rh_lfdistal" link2="rh_lftip" reason="Adjacent" />
     <disable_collisions link1="rh_thdistal" link2="rh_thtip" reason="Adjacent" />
+
+    <disable_collisions link1="rh_thdistal" link2="rh_ffdistal" reason="Adjacent" />
+    <disable_collisions link1="rh_thdistal" link2="rh_mfdistal" reason="Adjacent" />
+    <disable_collisions link1="rh_thdistal" link2="rh_rfdistal" reason="Adjacent" />
+    <disable_collisions link1="rh_thdistal" link2="rh_lfdistal" reason="Adjacent" /> 
 </robot>
