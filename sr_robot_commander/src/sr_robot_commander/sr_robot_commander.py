@@ -36,6 +36,8 @@ from math import radians
 
 from sr_utilities.hand_finder import HandFinder
 
+from moveit_msgs.srv import GetPositionFK
+
 
 class SrRobotCommander(object):
     """
@@ -75,6 +77,9 @@ class SrRobotCommander(object):
         self._joints_effort = {}
         self.__plan = None
 
+        self._forward_k = rospy.ServiceProxy(
+            'compute_fk', GetPositionFK)
+
         # prefix of the trajectory controller
         if name in self.__group_prefixes.keys():
             self._prefix = self.__group_prefixes[name]
@@ -89,6 +94,13 @@ class SrRobotCommander(object):
         self._set_up_action_client()
 
         threading.Thread(None, rospy.spin)
+
+    def get_end_effector_pose_from_state(self, state):
+        header = Header()
+        fk_link_names = [self._move_group_commander.get_end_effector_link()]
+        header.frame_id = self._move_group_commanderget_pose_reference_frame()
+        response = self._forward_k(header, fk_link_names, state)
+        return response.pose_stamped[0]
 
     def get_planning_frame(self):
         return self._move_group_commander.get_planning_frame()
