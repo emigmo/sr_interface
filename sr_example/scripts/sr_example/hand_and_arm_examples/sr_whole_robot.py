@@ -27,7 +27,7 @@ class ManipulationDemo(object):
                                               hand_serial=self.hand_serial)
         self.arm_commander = SrArmCommander()
 
-        self.shake_time = 0.3
+        self.shake_time = 0.2
 
         self.one_shake = [{
             'name': 'up_shake',
@@ -126,11 +126,12 @@ class ManipulationDemo(object):
         },
         {
             'name': to_pre,
-            'interpolate_time': .5
+            'interpolate_time': 1
         },
         {
             'name': to_grasp,
-            'interpolate_time': .5
+            'interpolate_time': .5,
+            'pause_time': .2
         },
         {
             'name': 'hand_pre_bracket',
@@ -143,12 +144,12 @@ class ManipulationDemo(object):
         return trajectory
 
     def get_bracket_trajectory(self):
-        bracket_trajectory = self.move_bracket_traj(3,6) + self.move_bracket_traj(2,5) + self.move_bracket_traj(1,4) + \
-                             self.move_bracket_traj(4,1) + self.move_bracket_traj(5,2) + self.move_bracket_traj(6,3)
+        bracket_trajectory = self.move_bracket_traj(1,5) + self.move_bracket_traj(2,6) + self.move_bracket_traj(3,7) + \
+                             self.move_bracket_traj(5,1) + self.move_bracket_traj(6,2) + self.move_bracket_traj(7,3)  
         return bracket_trajectory
 
     def get_exhaust_trajectory(self):
-        exhaust_trajectory = (self.move_exaust_traj(1,2) + self.move_exaust_traj(2,1)) # *3
+        exhaust_trajectory = (self.move_exaust_traj(1,3) + self.move_exaust_traj(2,4) + self.move_exaust_traj(3,1) + self.move_exaust_traj(4,2)) # *3
         return exhaust_trajectory
 
     def get_baffle_trajectory(self):
@@ -200,26 +201,31 @@ class ManipulationDemo(object):
         return baffle_trajectory
 
     def hand_shake(self):
-        self.wait_for_topic()
-
-        self.arm_commander.move_to_named_target("prepare_to_shake", False)
-        self.hand_commander.move_to_named_target("hand_ready_to_shake", False)
+        self.arm_commander.move_to_named_target("prepare_to_shake", True)
+        self.hand_commander.move_to_named_target("hand_ready_to_shake", True)
 
         self.wait_for_topic()
 
-        self.arm_commander.move_to_named_target("ready_to_shake", False)
+        self.arm_commander.move_to_named_target("ready_to_shake", True)
 
         self.wait_for_topic()
 
         self.hand_commander.move_to_named_target("close_for_shake", True)
-
-        self.wait_for_topic()
-
         self.arm_commander.run_named_trajectory_unsafe(self.shake_trajectory, True)
 
-        self.hand_commander.move_to_named_target("hand_ready_to_shake", False)
-        self.wait_for_topic()
-        self.arm_commander.move_to_named_target("prepare_to_shake", False)
+        self.hand_commander.move_to_named_target("hand_ready_to_shake", True)
+        self.arm_commander.move_to_named_target("prepare_to_shake", True)
+
+        rest_trajectory = [
+            {
+                'name': 'above_table',
+                'interpolate_time': 1
+            },
+            {
+                'name': 'rest_on_table',
+                'interpolate_time': 1
+            }]
+        self.robot_commander.run_named_trajectory(rest_trajectory)
 
     def run(self):
         while not rospy.is_shutdown():
@@ -227,10 +233,25 @@ class ManipulationDemo(object):
             # Run trajectories via moveit
             trajectory = self.get_bracket_trajectory()
             self.robot_commander.run_named_trajectory(trajectory)
+
+            self.robot_commander.move_to_named_target("intermediate", True)
+
             trajectory = self.get_exhaust_trajectory()
             self.robot_commander.run_named_trajectory(trajectory)
-            trajectory = self.get_baffle_trajectory()
+
+            self.robot_commander.move_to_named_target("intermediate", True)
+
+
+            trajectory = self.get_bracket_trajectory()
             self.robot_commander.run_named_trajectory(trajectory)
+
+            self.robot_commander.move_to_named_target("intermediate", True)
+
+            trajectory = self.get_exhaust_trajectory()
+            self.robot_commander.run_named_trajectory(trajectory)
+
+            #trajectory = self.get_baffle_trajectory()
+            #self.robot_commander.run_named_trajectory(trajectory)
 
             self.hand_shake()
 
