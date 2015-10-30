@@ -1,0 +1,11 @@
+<launch>
+  <!-- Logitech R400 used -->
+  <arg name="r400" default="true"/>
+
+  <group if="$(arg r400)">
+    <!--<node name="logitech_r400_player" pkg="sr_example" type="logitech_r400_player.py" output="screen" />-->
+    <node name="logitech_r400" pkg="logitech_r400" type="logitech_r400" output="screen" />
+  </group>
+  <node name="demo" pkg="sr_example" type="sr_whole_robot.py" output="screen" />
+
+</launch>
