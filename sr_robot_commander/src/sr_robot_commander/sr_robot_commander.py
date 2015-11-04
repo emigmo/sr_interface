@@ -39,6 +39,7 @@ from sr_utilities.hand_finder import HandFinder
 from moveit_msgs.srv import GetPositionFK
 from std_msgs.msg import Header
 
+
 class SrRobotCommander(object):
     """
     Base class for hand and arm commanders
@@ -253,6 +254,12 @@ class SrRobotCommander(object):
         except rospy.ServiceException as exc:
             rospy.logwarn("Couldn't access warehouse: " + str(exc))
             return list()
+
+    def _reset_plan(self):
+        self.__plan = None
+
+    def _set_plan(self, plan):
+        self.__plan = plan
 
     def __get_srdf_names(self):
         return self._move_group_commander._g.get_named_targets()
