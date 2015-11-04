@@ -209,17 +209,6 @@ class SrRobotCommander(object):
 
         return output
 
-    # def enforce_bounds_on_joint_state(self, state):
-    #     if type(state) is JointState:
-    #         names = joint_state.name
-    #         positions = state.joint_state.position
-    #         state = dict (zip (names, positions))
-
-    #     bounded = self._move_group_commander._g.enforce_bounds_on_state(state)
-
-    #     new_state = deepcopy(state)
-    #     new_copy.positions = [bounded[name] for name in names]
-
     def get_current_pose(self):
         joint_names = self._move_group_commander._g.get_active_joints()
         joint_values = self._move_group_commander._g.get_current_joint_values()
