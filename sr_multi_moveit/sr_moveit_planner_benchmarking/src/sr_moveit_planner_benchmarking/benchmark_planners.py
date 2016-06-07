@@ -101,9 +101,16 @@ class PlannerAnnotationParser(AnnotationParserBase):
                     planner = "STOMP"
                 elif planner == "sbpl":
                     planner = "AnytimeD*"
+
                 self.planner_id = planner
                 self.group.set_planner_id(planner)
-                self._plan_joints(joints, self._annotations["name"]+"-test_"+str(test_id))
+
+                repeats = 1
+                if "repeatability_test" in self._annotations:
+                    repeats = self._annotations["repeatability_test"]
+                for iteration in range(repeats):
+                    self._plan_joints(joints, self._annotations["name"] +
+                                      "-test_" + str(test_id) + "-" + str(iteration))
 
         return self.planner_data
 
@@ -257,7 +264,7 @@ class PlannerBenchmarking(BenchmarkingBase):
         file_path += time.strftime("%Y_%m_%d-%H_%M_%S")
         file_path += "-planner_benchmark.xml"
         with open(file_path, 'w') as f:
-            f.write(tabulate(results, headers=row_titles, tablefmt="html"))
+            f.write(tabulate(results, headers=row_titles, tablefmt="orgtbl"))
 
 
 if __name__ == '__main__':
